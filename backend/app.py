@@ -18,7 +18,7 @@ db = client['Blackcoffer']
 collection = db['Dashboard']
 data = collection.find()
     
-@app.route('/filter',methods=['GET'])
+@app.route('/',methods=['GET'])
 def ReturnFIlterData():
     
     if not request.args:
