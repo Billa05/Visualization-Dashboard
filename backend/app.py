@@ -90,3 +90,6 @@ def ReturnFIlterData():
             filters['line'] = LinechartData(data=data,keyword=random.choice(line_values),country=request.args.get("country"))
             
         return filters
+    
+if __name__ == '__main__':
+    app.run(debug=True)
