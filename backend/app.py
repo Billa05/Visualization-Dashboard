@@ -1,5 +1,5 @@
 import random
-from flask import Flask, request
+from flask import Flask, request, g
 from pymongo import MongoClient
 from HeatMap import HeatmapData
 from PieChart import PiechartData
@@ -12,14 +12,29 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
-client = MongoClient("mongodb+srv://workinguse5:Biresh%402005@cluster0.hlgzx3g.mongodb.net/")
+# client = MongoClient("mongodb+srv://workinguse5:Biresh%402005@cluster0.hlgzx3g.mongodb.net/")
 
-db = client['Blackcoffer']
-collection = db['Dashboard']
-data = collection.find()
+# db = client['Blackcoffer']
+# collection = db['Dashboard']
+# data = collection.find()
+
+@app.before_request
+def before_request():
+    g.client = MongoClient("mongodb+srv://workinguse5:Biresh%402005@cluster0.hlgzx3g.mongodb.net/")
+    g.db = g.client['Blackcoffer']
+    g.collection = g.db['Dashboard']
+
+@app.teardown_appcontext
+def teardown_db(exception=None):
+    client = g.pop('client', None)
+    if client is not None:
+        client.close()
     
 @app.route('/',methods=['GET'])
 def ReturnFIlterData():
+    
+    collection = g.collection  # Use the collection from the application context
+    data = collection.find()
     
     if not request.args:
         return(
