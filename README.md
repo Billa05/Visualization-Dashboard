@@ -1,14 +1,3 @@
-Start up the backend:
-cd backend
-pip install -r requirements.txt
-python app.py
-
-start the frontend:
-cd frontend
-npm install
-npm run dev
-
-
 # Project Setup Instructions
 
 This document provides instructions on how to set up the project on your local machine.
