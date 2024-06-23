@@ -18,22 +18,21 @@ CORS(app)
 # collection = db['Dashboard']
 # data = collection.find()
 
-@app.before_request
-def before_request():
-    g.client = MongoClient("mongodb+srv://workinguse5:Biresh%402005@cluster0.hlgzx3g.mongodb.net/")
-    g.db = g.client['Blackcoffer']
-    g.collection = g.db['Dashboard']
+def get_db():
+    if 'db' not in g:
+        g.client = MongoClient("mongodb+srv://workinguse5:Biresh%402005@cluster0.hlgzx3g.mongodb.net/")
+        g.db = g.client['Blackcoffer']
+    return g.db
 
 @app.teardown_appcontext
-def teardown_db(exception=None):
-    client = g.pop('client', None)
-    if client is not None:
-        client.close()
+def close_db(error):
+    if hasattr(g, 'client'):
+        g.client.close()
     
 @app.route('/',methods=['GET'])
 def ReturnFIlterData():
-    
-    collection = g.collection  # Use the collection from the application context
+    db = get_db()
+    collection = db['Dashboard']
     data = collection.find()
     
     if not request.args:
