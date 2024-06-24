@@ -1,4 +1,6 @@
 import random
+import os
+from dotenv import load_dotenv
 from flask import Flask, request, g
 from pymongo import MongoClient
 from HeatMap import HeatmapData
@@ -9,18 +11,14 @@ from Choropleth import ChoroplethData
 from copy import deepcopy
 from flask_cors import CORS
 
+load_dotenv()
+
 app = Flask(__name__)
 CORS(app)
 
-# client = MongoClient("mongodb+srv://workinguse5:Biresh%402005@cluster0.hlgzx3g.mongodb.net/")
-
-# db = client['Blackcoffer']
-# collection = db['Dashboard']
-# data = collection.find()
-
 def get_db():
     if 'db' not in g:
-        g.client = MongoClient("mongodb+srv://workinguse5:Biresh%402005@cluster0.hlgzx3g.mongodb.net/")
+        g.client = MongoClient(os.getenv('mongo_uri'))
         g.db = g.client['Blackcoffer']
     return g.db
 
