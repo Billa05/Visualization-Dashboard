@@ -84,7 +84,7 @@ def ReturnFIlterData():
             filters['line'] = collection.find({"filter":f"line_{keyword}"})[0]["data"]
         else:
             keyword=random.choice(line_values)
-            filters['line'] = collection.find({"filter":f"line_{keyword}_{request.args.get("country")}"})[0]["data"]
+            filters['line'] = collection.find({"filter":f"line_{keyword}_{request.args.get('country')}"})[0]["data"]
             
         return filters
     
