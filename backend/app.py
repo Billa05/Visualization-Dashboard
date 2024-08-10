@@ -3,12 +3,6 @@ import os
 from dotenv import load_dotenv
 from flask import Flask, request, g
 from pymongo import MongoClient
-from HeatMap import HeatmapData
-from PieChart import PiechartData
-from LineChart import LinechartData
-from SactterChart import ScatterchartData
-from Choropleth import ChoroplethData
-from copy import deepcopy
 from flask_cors import CORS
 
 load_dotenv()
@@ -30,23 +24,23 @@ def close_db(error):
 @app.route('/',methods=['GET'])
 def ReturnFIlterData():
     db = get_db()
-    collection = db['Dashboard']
+    collection = db['FormatedData']
     data = collection.find()
     
     if not request.args:
         return(
             {
-            "heatmap":HeatmapData(deepcopy(data)),
-            "piechart":PiechartData(deepcopy(data),keyword="pestle"),
-            "linechart":LinechartData(deepcopy(data),keyword="topic"),
-            "scatterchart":ScatterchartData(deepcopy(data),keyword="sector"),
-            "choropleth":ChoroplethData(deepcopy(data),keyword="intensity")
+            "heatmap":collection.find({"filter":"Heatmap"})[0]["data"],
+            "piechart":collection.find({"filter":"pie_pestle"})[0]["data"],
+            "linechart":collection.find({"filter":"line_topic"})[0]["data"],
+            "scatterchart":collection.find({"filter":"scatter_sector"})[0]["data"],
+            "choropleth":collection.find({"filter":"choropleth_intensity"})[0]["data"]
             }
         )
 
     else:
         filters = {
-            "heatmap":HeatmapData(data=data)
+            "heatmap":collection.find({"filter":"Heatmap"})[0]["data"]
         }
 
         filter_pie_keys = ['source', 'topic', 'sector', 'insight', 'region', 'country', 'pestle']
@@ -55,7 +49,8 @@ def ReturnFIlterData():
             value = request.args.get(key)
             if value:
                 pie_values.append(value)
-        filters["piechart"] = PiechartData(data=data,keyword=random.choice(pie_values))
+        keyword=random.choice(pie_values)
+        filters["piechart"] = collection.find({"filter":f"pie_{keyword}"})[0]["data"]
 
         
         filter_choropleth_keys=['intensity','relevance','likelihood']
@@ -64,7 +59,8 @@ def ReturnFIlterData():
             value = request.args.get(key)
             if value:
                 choropleth_values.append(value)
-        filters["choropleth"]=ChoroplethData(data=data,keyword=random.choice(choropleth_values))
+        keyword=random.choice(choropleth_values)
+        filters["choropleth"]=collection.find({"filter":f"choropleth_{keyword}"})[0]["data"]
         
         
         filter_scatter_keys=['country','topic','sector','pestle']
@@ -73,7 +69,8 @@ def ReturnFIlterData():
             value = request.args.get(key)
             if value:
                 scatter_values.append(value)
-        filters['scatter'] = ScatterchartData(data=data,keyword=random.choice(scatter_values))
+        keyword=random.choice(scatter_values)
+        filters['scatter'] = collection.find({"filter":f"scatter_{keyword}"})[0]["data"]
         
         
         filter_line_keys=['topic','pestle','insight','sector',]
@@ -83,9 +80,11 @@ def ReturnFIlterData():
             if value:
                 line_values.append(value)
         if not request.args.get("country"):
-            filters['line'] = LinechartData(data=data,keyword=random.choice(line_values))
+            keyword=random.choice(line_values)
+            filters['line'] = collection.find({"filter":f"line_{keyword}"})[0]["data"]
         else:
-            filters['line'] = LinechartData(data=data,keyword=random.choice(line_values),country=request.args.get("country"))
+            keyword=random.choice(line_values)
+            filters['line'] = collection.find({"filter":f"line_{keyword}_{request.args.get("country")}"})[0]["data"]
             
         return filters
     
