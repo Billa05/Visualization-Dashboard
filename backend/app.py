@@ -1,29 +1,14 @@
 import random
-import os
-# from dotenv import load_dotenv
 from flask import Flask, request, g
 from pymongo import MongoClient
 from flask_cors import CORS
 
-# load_dotenv()
 
 app = Flask(__name__)
 CORS(app)
-
-# def get_db():
-#     if 'db' not in g:
-#         g.client = MongoClient(os.getenv('mongo_uri'))
-#         g.db = g.client['Blackcoffer']
-#     return g.db
-
-# @app.teardown_appcontext
-# def close_db(error):
-#     if hasattr(g, 'client'):
-#         g.client.close()
     
 @app.route('/',methods=['GET'])
 def ReturnFIlterData():
-    # db = get_db()
     client = MongoClient("mongodb+srv://workinguse5:Biresh%402005@cluster0.hlgzx3g.mongodb.net/")
     db = client['Blackcoffer']
     collection = db['FormatedData']
@@ -89,5 +74,5 @@ def ReturnFIlterData():
             
         return filters
     
-# if __name__ == '__main__':
-#     app.run(debug=True)
+if __name__ == "__main__":
+    app.run(host='0.0.0.0', port=5000)
