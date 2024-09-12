@@ -7,7 +7,7 @@ export const ChartsDataProvider = ({ children }) => {
     const [data, setData] = useState(null);
 
     useEffect(() => {
-        axios.get(`http://127.0.0.1:5000/filter`)
+        axios.get("http://127.0.0.1:5000/")
             .then((res) => {
                 console.log(res.data);
                 setData(res.data);

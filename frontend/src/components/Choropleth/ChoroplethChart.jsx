@@ -1,6 +1,8 @@
-import { ResponsiveChoropleth } from '@nivo/geo';
-import { useContext } from 'react';
-import { ChartsDataContext } from '../../ChartsContextProvider';
+import { ResponsiveChoropleth } from "@nivo/geo";
+import { useContext } from "react";
+import { ChartsDataContext } from "../../ChartsContextProvider";
+import { useState, useEffect } from "react";
+import axios from "axios";
 
 // make sure parent container have a defined height when using
 // responsive component, otherwise height will be 0 and
@@ -8,12 +10,25 @@ import { ChartsDataContext } from '../../ChartsContextProvider';
 // website examples showcase many properties,
 // you'll often use just a few of them.
 const MyResponsiveChoropleth = ({}) => {
-    const {data} = useContext(ChartsDataContext);
-    
-    return(
-    <ResponsiveChoropleth
-        data={JSON.stringify(data).choropleth}
-        features={[
+  const [data, setData] = useState(null);
+
+  useEffect(() => {
+    axios
+      .get("http://127.0.0.1:5000/")
+      .then((res) => {
+        // console.log(res.data);
+        setData(res.data);
+      })
+      .catch((error) => console.error(error));
+  }, []);
+  // const { data } = useContext(ChartsDataContext);
+
+  return (
+    <>
+      {data && (
+        <ResponsiveChoropleth
+          data={data.choropleth}
+          features={[
             {
               type: "Feature",
               properties: {
@@ -13558,99 +13573,101 @@ const MyResponsiveChoropleth = ({}) => {
               },
               id: "KOR",
             },
-          ]
-        }
-        margin={{ top: 0, right: 0, bottom: 0, left: 0 }}
-        colors="nivo"
-        domain={[ 0, 1000000 ]}
-        unknownColor="#666666"
-        label="properties.name"
-        valueFormat=".2s"
-        projectionTranslation={[ 0.5, 0.5 ]}
-        projectionRotation={[ 0, 0, 0 ]}
-        enableGraticule={true}
-        graticuleLineColor="#dddddd"
-        borderWidth={0.5}
-        borderColor="#152538"
-        defs={[
+          ]}
+          margin={{ top: 0, right: 0, bottom: 0, left: 0 }}
+          colors="nivo"
+          domain={[0, 1000000]}
+          unknownColor="#666666"
+          label="properties.name"
+          valueFormat=".2s"
+          projectionTranslation={[0.5, 0.5]}
+          projectionRotation={[0, 0, 0]}
+          enableGraticule={true}
+          graticuleLineColor="#dddddd"
+          borderWidth={0.5}
+          borderColor="#152538"
+          defs={[
             {
-                id: 'dots',
-                type: 'patternDots',
-                background: 'inherit',
-                color: '#38bcb2',
-                size: 4,
-                padding: 1,
-                stagger: true
+              id: "dots",
+              type: "patternDots",
+              background: "inherit",
+              color: "#38bcb2",
+              size: 4,
+              padding: 1,
+              stagger: true,
             },
             {
-                id: 'lines',
-                type: 'patternLines',
-                background: 'inherit',
-                color: '#eed312',
-                rotation: -45,
-                lineWidth: 6,
-                spacing: 10
+              id: "lines",
+              type: "patternLines",
+              background: "inherit",
+              color: "#eed312",
+              rotation: -45,
+              lineWidth: 6,
+              spacing: 10,
             },
             {
-                id: 'gradient',
-                type: 'linearGradient',
-                colors: [
-                    {
-                        offset: 0,
-                        color: '#000'
-                    },
-                    {
-                        offset: 100,
-                        color: 'inherit'
-                    }
-                ]
-            }
-        ]}
-        fill={[
-            {
-                match: {
-                    id: 'CAN'
+              id: "gradient",
+              type: "linearGradient",
+              colors: [
+                {
+                  offset: 0,
+                  color: "#000",
                 },
-                id: 'dots'
+                {
+                  offset: 100,
+                  color: "inherit",
+                },
+              ],
+            },
+          ]}
+          fill={[
+            {
+              match: {
+                id: "CAN",
+              },
+              id: "dots",
             },
             {
-                match: {
-                    id: 'CHN'
-                },
-                id: 'lines'
+              match: {
+                id: "CHN",
+              },
+              id: "lines",
             },
             {
-                match: {
-                    id: 'ATA'
-                },
-                id: 'gradient'
-            }
-        ]}
-        legends={[
+              match: {
+                id: "ATA",
+              },
+              id: "gradient",
+            },
+          ]}
+          legends={[
             {
-                anchor: 'bottom-left',
-                direction: 'column',
-                justify: true,
-                translateX: 20,
-                translateY: -100,
-                itemsSpacing: 0,
-                itemWidth: 94,
-                itemHeight: 18,
-                itemDirection: 'left-to-right',
-                itemTextColor: '#444444',
-                itemOpacity: 0.85,
-                symbolSize: 18,
-                effects: [
-                    {
-                        on: 'hover',
-                        style: {
-                            itemTextColor: '#000000',
-                            itemOpacity: 1
-                        }
-                    }
-                ]
-            }
-        ]}
-    />);
-}
+              anchor: "bottom-left",
+              direction: "column",
+              justify: true,
+              translateX: 20,
+              translateY: -100,
+              itemsSpacing: 0,
+              itemWidth: 94,
+              itemHeight: 18,
+              itemDirection: "left-to-right",
+              itemTextColor: "#444444",
+              itemOpacity: 0.85,
+              symbolSize: 18,
+              effects: [
+                {
+                  on: "hover",
+                  style: {
+                    itemTextColor: "#000000",
+                    itemOpacity: 1,
+                  },
+                },
+              ],
+            },
+          ]}
+        />
+      )}
+    </>
+  );
+};
 export default MyResponsiveChoropleth;

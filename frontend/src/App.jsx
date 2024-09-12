@@ -17,7 +17,9 @@ function App() {
               <Menu />
             </div>
             <div className="contentContainerr w-full h-screen">
-              <Content/>
+              <ChartsDataProvider>
+                <Content />
+              </ChartsDataProvider>
             </div>
           </div>
           <Footer />
@@ -27,13 +29,11 @@ function App() {
   };
 
   return (
-    <ChartsDataProvider>
     <Router>
       <Routes>
         <Route path="*" element={<Layout />} />
       </Routes>
     </Router>
-    </ChartsDataProvider>
   );
 }
 
